@@ -1,5 +1,5 @@
 # stepit_sim
-Sim-to-sim validation with stepit and unitree_mujoco.
+Sim-to-sim validation with [stepit](https://github.com/legnAray/stepit) and [unitree_mujoco](https://github.com/legnAray/unitree_mujoco).
 
 
 ## Quick Start
@@ -100,7 +100,7 @@ colcon build --cmake-args \
 ./third_party/unitree_mujoco/simulate/build/unitree_mujoco -r go2 -s scene.xml -i 1 -n lo
 ```
 
-### 3) Start s te pi t (ROS2)
+### 3) Start stepit (ROS2)
 
 ```bash
 source /opt/ros/<distro>/setup.zsh
