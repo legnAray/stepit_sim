@@ -1,0 +1,6 @@
+[submodule "third_party/unitree_mujoco"]
+	path = third_party/unitree_mujoco
+	url = https://github.com/legnAray/unitree_mujoco.git
+[submodule "third_party/stepit"]
+	path = third_party/stepit
+	url = https://github.com/legnAray/stepit.git
