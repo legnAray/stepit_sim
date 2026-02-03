@@ -27,7 +27,7 @@ git submodule update --init --recursive
 sudo apt update && sudo apt install -y cmake build-essential \
   libboost-dev libboost-filesystem-dev libboost-program-options-dev \
   libeigen3-dev libfmt-dev libyaml-cpp-dev \
-  libspdlog-dev libglfw3-dev
+  libspdlog-dev libglfw3-dev liblcm-dev
 ```
 
 ### 3. Install Unitree SDK2
@@ -136,9 +136,9 @@ source ros2_ws/install/setup.zsh
 | `-r` | Robot model | `aliengo`, `go2`, `b2`, `g1` |
 | `-s` | Scene XML file | `scene.xml` |
 | `-c` | Controller type | `console`, `joystick`, `ros2_msg`, `ros2_srv`, `dummy` |
-| `-p` | Policy path | `/path/to/policy_dir` |
+| `-p` | Policy directory path | `/path/to/policy_dir` |
 | `-P` | Publisher type | `dummy`, `csv`, `ros2` |
-| `-f` | Framework/Spin mode | `spin@ros2`, `joystick@usb`, `spin@wait_for_sigint` |
+| `-f` | default factory for a specified type | `spin@ros2`, `joystick@usb`, `spin@wait_for_sigint` |
 | `-v` | Log level | `0(Error)`, `1(Warn)`, `2(Info)`, `3(Debug)` |
 | `--` | **Pass-through** | Forward CLI args to StepIt plugins (e.g., ROS 2 args) |
 
@@ -148,7 +148,7 @@ Use `--` to pass arguments directly to StepIt plugins. This is particularly usef
 
 ```bash
 # Example: Passing ROS 2 arguments to set a namespace
-scripts/run_sim.sh -ros2 -r go2 -s scene.xml -c joystick -f joystick@usb -p path/to/policy_dir -P ros2 -- --ros-args -r __ns:=/go2
+./scripts/run_sim.sh -ros2 -r go2 -s scene.xml -c joystick -f joystick@usb -p path/to/policy_dir -P ros2 -- --ros-args -r __ns:=/go2
 ```
 
 ---
