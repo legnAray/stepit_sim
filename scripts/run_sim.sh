@@ -16,7 +16,7 @@ Optional:
 Notes:
   - All other arguments are passed to stepit as-is.
   - Use "--" to pass plugin/ROS2 CLI arguments to stepit plugins.
-  - STEPIT_NETIF and STEPIT_DOMAIN_ID are fixed to lo / 1 in this repo.
+  - STEPIT_NETIF and STEPIT_UNITREE2_DOMAIN_ID are fixed to lo / 1 in this repo.
 EOF
 }
 
@@ -37,6 +37,8 @@ while [[ $# -gt 0 ]]; do
       stepit_robot="$robot"
       if [[ "$robot" == "g1" ]]; then
         stepit_robot="g1_29dof"
+      elif [[ "$robot" == "aliengo" ]]; then
+        stepit_robot="aliengo_mujoco"
       fi
       stepit_args+=("$1" "$stepit_robot")
       shift 2
@@ -97,27 +99,15 @@ if [[ ! -x "$STEPIT_BIN" ]]; then
 fi
 
 export STEPIT_NETIF="lo"
-export STEPIT_DOMAIN_ID="1"
+export STEPIT_UNITREE2_DOMAIN_ID="1"
 
-added_ip=0
 cleanup() {
   if [[ -n "${sim_pid:-}" ]]; then
     kill "$sim_pid" 2>/dev/null || true
     wait "$sim_pid" 2>/dev/null || true
   fi
-  if [[ "$added_ip" -eq 1 ]]; then
-    sudo ip addr del 192.168.123.10/24 dev lo 2>/dev/null || true
-  fi
 }
 trap cleanup EXIT INT TERM
-
-if [[ "$robot" == "aliengo" ]]; then
-  export STEPIT_ALIENGO_RAW_UDP=1
-  if ! ip addr show lo | grep -q "192.168.123.10/24"; then
-    sudo ip addr add 192.168.123.10/24 dev lo
-    added_ip=1
-  fi
-fi
 
 "$SIM_BIN" -r "$robot" -s "$scene" -i 1 -n lo &
 sim_pid=$!

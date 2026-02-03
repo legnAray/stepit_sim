@@ -1,11 +1,13 @@
 # StepIt Sim 🤖
 
-**StepIt Sim** is a framework for Sim-to-Sim validation, built upon [stepit](https://github.com/chengruiz/stepit) and [unitree_mujoco](https://github.com/unitreerobotics/unitree_mujoco). It provides a streamlined workflow for deploying control policies in Robots.
+**StepIt Sim** is a framework for Sim-to-Sim validation, built upon [stepit](https://github.com/chengruiz/stepit) and [unitree_mujoco](https://github.com/unitreerobotics/unitree_mujoco). It provides a streamlined workflow for deploying policy networks in Robots.
 
 ### 🤖 Supported Robots
 
-* **Unitree G1** (Humanoid)
-* **Unitree Go2** / **B2** / **Aliengo** (Quadruped)
+* **Unitree G1**
+* **Unitree Go2**
+* **Unitree B2**
+* **Unitree Aliengo**
 
 > *Note: Support for additional robotic platforms will be integrated in future updates.*
 
@@ -44,9 +46,6 @@ sudo make install
 Download **MuJoCo 3.3.6** from [MuJoCo Releases](https://github.com/google-deepmind/mujoco/releases).
 
 ```bash
-# Example setup
-mkdir -p ~/.mujoco
-ln -s /path/to/your/mujoco-3.3.6 ~/.mujoco/mujoco-3.3.6
 cd third_party/unitree_mujoco/simulate
 ln -s ~/.mujoco/mujoco-3.3.6 mujoco
 ```
@@ -61,16 +60,16 @@ ln -s ~/.mujoco/mujoco-3.3.6 mujoco
 cmake -S third_party/unitree_mujoco/simulate \
       -B third_party/unitree_mujoco/simulate/build \
       -DCMAKE_BUILD_TYPE=Release
-cmake --build third_party/unitree_mujoco/simulate/build -j$(nproc)
+cmake --build third_party/unitree_mujoco/simulate/build -j
 ```
 
 ### Build StepIt
 
 ```bash
-export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;csv_publisher;policy_neuro;nnrt_onnxruntime;robot_unitree2;robot_unitree_aliengo"
+export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;csv_publisher;policy_neuro;nnrt_onnxruntime;robot_unitree2"
 
 cmake -S third_party/stepit -B build/stepit -DCMAKE_BUILD_TYPE=Release
-cmake --build build/stepit -j$(nproc)
+cmake --build build/stepit -j
 ```
 
 ---
@@ -106,7 +105,8 @@ Enable StepIt’s ROS 2 interface for modular control.
 ```bash
 source /opt/ros/<distro>/setup.zsh
 cd ros2_ws
-colcon build --cmake-args \
+export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;csv_publisher;policy_neuro;nnrt_onnxruntime;robot_unitree2"
+colcon build --base-paths src src/stepit/package/ros2 --packages-skip stepit --cmake-args \
   -DSTEPIT_WHITELIST_PLUGINS="$STEPIT_WHITELIST_PLUGINS;ros2_base" \
   -DCMAKE_BUILD_TYPE=Release
 ```
@@ -130,6 +130,8 @@ source ros2_ws/install/setup.zsh
 
 ### ⚙️ Parameter Configuration
 
+Refer to [stepit](https://github.com/chengruiz/stepit) for additional parameter details.
+
 | Argument | Description | Values |
 | --- | --- | --- |
 | `-ros2` | Enable ROS 2 interface | (Flag) |
@@ -138,7 +140,7 @@ source ros2_ws/install/setup.zsh
 | `-c` | Controller type | `console`, `joystick`, `ros2_msg`, `ros2_srv`, `dummy` |
 | `-p` | Policy directory path | `/path/to/policy_dir` |
 | `-P` | Publisher type | `dummy`, `csv`, `ros2` |
-| `-f` | default factory for a specified type | `spin@ros2`, `joystick@usb`, `spin@wait_for_sigint` |
+| `-f` | default factory for a specified type | `joystick@usb`, `spin@ros2`, `spin@wait_for_sigint` |
 | `-v` | Log level | `0(Error)`, `1(Warn)`, `2(Info)`, `3(Debug)` |
 | `--` | **Pass-through** | Forward CLI args to StepIt plugins (e.g., ROS 2 args) |
 
