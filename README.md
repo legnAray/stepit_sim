@@ -68,7 +68,9 @@ cmake --build third_party/unitree_mujoco/simulate/build -j
 ```bash
 export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;csv_publisher;policy_neuro;nnrt_onnxruntime;robot_unitree2"
 
-cmake -S third_party/stepit -B build/stepit -DCMAKE_BUILD_TYPE=Release
+cmake -S third_party/stepit -B build/stepit \
+  -DSTEPIT_WHITELIST_PLUGINS="$STEPIT_WHITELIST_PLUGINS" \
+  -DCMAKE_BUILD_TYPE=Release
 cmake --build build/stepit -j
 ```
 
