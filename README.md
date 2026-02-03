@@ -1,10 +1,19 @@
-# stepit_sim
-Sim-to-sim validation with [stepit](https://github.com/legnAray/stepit) and [unitree_mujoco](https://github.com/legnAray/unitree_mujoco).
+# StepIt Sim 🤖
 
+**StepIt Sim** is a framework for Sim-to-Sim validation, built upon [stepit](https://github.com/chengruiz/stepit) and [unitree_mujoco](https://github.com/unitreerobotics/unitree_mujoco). It provides a streamlined workflow for deploying control policies in Robots.
 
-## Quick Start
+### 🤖 Supported Robots
 
-### 1) Clone
+* **Unitree G1** (Humanoid)
+* **Unitree Go2** / **B2** / **Aliengo** (Quadruped)
+
+> *Note: Support for additional robotic platforms will be integrated in future updates.*
+
+---
+
+## 🏗️ Installation & Setup
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/legnAray/stepit_sim.git
@@ -12,123 +21,141 @@ cd stepit_sim
 git submodule update --init --recursive
 ```
 
-### 2) System dependencies
+### 2. Install System Dependencies
 
 ```bash
-sudo apt install cmake build-essential \
+sudo apt update && sudo apt install -y cmake build-essential \
   libboost-dev libboost-filesystem-dev libboost-program-options-dev \
   libeigen3-dev libfmt-dev libyaml-cpp-dev \
   libspdlog-dev libglfw3-dev
 ```
 
-### 3) Install unitree_sdk2
+### 3. Install Unitree SDK2
 
 ```bash
 git clone https://github.com/unitreerobotics/unitree_sdk2.git
-cd unitree_sdk2
-mkdir build && cd build
+cd unitree_sdk2 && mkdir build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=/opt/unitree_robotics
 sudo make install
 ```
 
-### 4) Link MuJoCo
+### 4. Link MuJoCo
 
-Download MuJoCo 3.3.6 from: https://github.com/google-deepmind/mujoco/releases
+Download **MuJoCo 3.3.6** from [MuJoCo Releases](https://github.com/google-deepmind/mujoco/releases).
 
 ```bash
+# Example setup
+mkdir -p ~/.mujoco
+ln -s /path/to/your/mujoco-3.3.6 ~/.mujoco/mujoco-3.3.6
 cd third_party/unitree_mujoco/simulate
 ln -s ~/.mujoco/mujoco-3.3.6 mujoco
 ```
 
-### 5) Build unitree_mujoco
+---
+
+## 🛠️ Build Instructions
+
+### Build unitree_mujoco
 
 ```bash
 cmake -S third_party/unitree_mujoco/simulate \
       -B third_party/unitree_mujoco/simulate/build \
       -DCMAKE_BUILD_TYPE=Release
-cmake --build third_party/unitree_mujoco/simulate/build -j
+cmake --build third_party/unitree_mujoco/simulate/build -j$(nproc)
 ```
 
-Run the simulator (Go2 example):
+### Build StepIt
 
 ```bash
-./third_party/unitree_mujoco/simulate/build/unitree_mujoco -r go2 -s scene.xml -i 1 -n lo
-```
+export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;csv_publisher;policy_neuro;nnrt_onnxruntime;robot_unitree2;robot_unitree_aliengo"
 
-### 6) Build stepit
-
-Default plugin whitelist in this repo:
-`control_console;joystick_usb;joystick_udp;csv_publisher;policy_neuro;nnrt_onnxruntime;robot_unitree2;robot_unitree_go1;robot_unitree_b1;robot_unitree_aliengo`
-
-```bash
 cmake -S third_party/stepit -B build/stepit -DCMAKE_BUILD_TYPE=Release
-cmake --build build/stepit -j
+cmake --build build/stepit -j$(nproc)
 ```
 
-### 7) Run stepit (console control)
+---
+
+## 🏃 Running Simulations
+
+### Basic Test
+
+Launch the simulation and use the interactive console:
 
 ```bash
-export STEPIT_NETIF=lo
-export STEPIT_DOMAIN_ID=1
-./build/stepit/bin/stepit -r go2 -c console -P dummy
+./scripts/run_sim.sh -r go2 -s scene.xml -c console -P dummy
 ```
 
-Console input examples:
+*Console examples:* `Agent/StandUp`, `Agent/LieDown`
 
+### Policy Simulation
+
+Simulate a learned policy with joystick control:
+
+```bash
+./scripts/run_sim.sh -r go2 -s scene.xml -c joystick -f joystick@usb -p path/to/policy_dir -P dummy
 ```
-Agent/StandUp
-Agent/LieDown
-```
 
-## ROS2 mode (optional)
+---
 
-This enables StepIt’s ROS2 interface.
+## 🌐 ROS 2 Mode (Optional)
 
-### 1) Build ROS2 packages
+Enable StepIt’s ROS 2 interface for modular control.
+
+### 1. Build ROS 2 Packages
 
 ```bash
 source /opt/ros/<distro>/setup.zsh
 cd ros2_ws
 colcon build --cmake-args \
-  -DSTEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;csv_publisher;policy_neuro;nnrt_onnxruntime;robot_unitree2;robot_unitree_go1;robot_unitree_b1;robot_unitree_aliengo;ros2_base" \
+  -DSTEPIT_WHITELIST_PLUGINS="$STEPIT_WHITELIST_PLUGINS;ros2_base" \
   -DCMAKE_BUILD_TYPE=Release
 ```
 
-### 2) Start unitree_mujoco
+### 2. Launch in ROS 2 Mode
 
 ```bash
-./third_party/unitree_mujoco/simulate/build/unitree_mujoco -r go2 -s scene.xml -i 1 -n lo
-```
-
-### 3) Start stepit (ROS2)
-
-```bash
-source /opt/ros/<distro>/setup.zsh
 source ros2_ws/install/setup.zsh
-export STEPIT_NETIF=lo
-export STEPIT_DOMAIN_ID=1
-
-ros2_ws/install/stepit_ros2/lib/stepit_ros2/stepit -r go2 -c ros2_srv -P ros2 -f spin@ros2
+./scripts/run_sim.sh -ros2 -r go2 -s scene.xml -c ros2_srv -P ros2 -f spin@ros2
 ```
 
-### 4) Send ROS2 control commands
+### 3. Control Commands
 
-Service:
+| Method | Command |
+| --- | --- |
+| **Service** | `ros2 service call /control stepit_ros2_msgs/srv/Control "{request: 'Agent/StandUp'}"` |
+| **Topic** | `ros2 topic pub --once /control std_msgs/msg/String "{data: 'Agent/StandUp'}"` |
+
+
+---
+
+### ⚙️ Parameter Configuration
+
+| Argument | Description | Values |
+| --- | --- | --- |
+| `-ros2` | Enable ROS 2 interface | (Flag) |
+| `-r` | Robot model | `aliengo`, `go2`, `b2`, `g1` |
+| `-s` | Scene XML file | `scene.xml` |
+| `-c` | Controller type | `console`, `joystick`, `ros2_msg`, `ros2_srv`, `dummy` |
+| `-p` | Policy path | `/path/to/policy_dir` |
+| `-P` | Publisher type | `dummy`, `csv`, `ros2` |
+| `-f` | Framework/Spin mode | `spin@ros2`, `joystick@usb`, `spin@wait_for_sigint` |
+| `-v` | Log level | `0(Error)`, `1(Warn)`, `2(Info)`, `3(Debug)` |
+| `--` | **Pass-through** | Forward CLI args to StepIt plugins (e.g., ROS 2 args) |
+
+#### 💡 Pass-through Examples
+
+Use `--` to pass arguments directly to StepIt plugins. This is particularly useful for ROS 2 node remapping or namespacing:
 
 ```bash
-ros2 service call /control stepit_ros2_msgs/srv/Control "{request: 'Agent/StandUp'}"
-ros2 service call /control stepit_ros2_msgs/srv/Control "{request: 'Agent/LieDown'}"
+# Example: Passing ROS 2 arguments to set a namespace
+scripts/run_sim.sh -ros2 -r go2 -s scene.xml -c joystick -f joystick@usb -p path/to/policy_dir -P ros2 -- --ros-args -r __ns:=/go2
 ```
 
-Topic:
+---
 
-```bash
-ros2 topic pub --once /control std_msgs/msg/String "{data: 'Agent/StandUp'}"
-```
+## 🤝 Acknowledgements
 
-## Acknowledgements
+This repository is built upon the following open-source projects:
 
-This repository is built on top of:
-
-- stepit: https://github.com/chengruiz/stepit
-- unitree_mujoco: https://github.com/unitreerobotics/unitree_mujoco
+* [stepit](https://github.com/chengruiz/stepit)
+* [unitree_mujoco](https://github.com/unitreerobotics/unitree_mujoco)

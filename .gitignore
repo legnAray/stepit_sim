@@ -33,3 +33,5 @@ ros2_ws/log/
 # OS junk
 .DS_Store
 Thumbs.db
+
+MUJOCO_LOG.TXT
