@@ -1,0 +1,15 @@
+control_freq: 50
+
+actuator:
+  type: position
+  Kp: 30.0
+  Kd: 0.5
+  scale: [1,1,1,1,1,1,1,1,1,1,1,1]
+  bias:  [0,0,0,0,0,0,0,0,0,0,0,0]
+
+action_mean: [0.0, 0.7, -1.5, 0.0, 0.7, -1.5, 0.0, 0.7, -1.5, 0.0, 0.7, -1.5]
+
+module:
+  - cmd_vel
+  - action_history
+  - actor
