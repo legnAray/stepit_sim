@@ -66,7 +66,7 @@ cmake --build third_party/unitree_mujoco/simulate/build -j
 ### Build StepIt
 
 ```bash
-export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;csv_publisher;policy_neuro;nnrt_onnxruntime;robot_unitree2"
+export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;publisher_csv;policy_neuro;nnrt_onnxruntime;robot_unitree2"
 
 cmake -S third_party/stepit -B build/stepit \
   -DSTEPIT_WHITELIST_PLUGINS="$STEPIT_WHITELIST_PLUGINS" \
@@ -107,7 +107,7 @@ Enable StepIt’s ROS 2 interface for modular control.
 ```bash
 source /opt/ros/<distro>/setup.zsh
 cd ros2_ws
-export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;csv_publisher;policy_neuro;nnrt_onnxruntime;robot_unitree2"
+export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;publisher_csv;policy_neuro;nnrt_onnxruntime;robot_unitree2"
 colcon build --base-paths src src/stepit/package/ros2 --packages-skip stepit --cmake-args \
   -DSTEPIT_WHITELIST_PLUGINS="$STEPIT_WHITELIST_PLUGINS;ros2_base" \
   -DCMAKE_BUILD_TYPE=Release

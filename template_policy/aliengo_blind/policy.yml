@@ -10,6 +10,6 @@ actuator:
 action_mean: [0.0, 0.7, -1.5, 0.0, 0.7, -1.5, 0.0, 0.7, -1.5, 0.0, 0.7, -1.5]
 
 module:
-  - cmd_vel
+  - cmd_vel_source
   - action_history
   - actor

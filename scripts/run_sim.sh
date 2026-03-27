@@ -36,7 +36,7 @@ while [[ $# -gt 0 ]]; do
       fi
       stepit_robot="$robot"
       if [[ "$robot" == "g1" ]]; then
-        stepit_robot="g1_29dof"
+        stepit_robot="g1"
       elif [[ "$robot" == "aliengo" ]]; then
         stepit_robot="aliengo_mujoco"
       fi
@@ -79,6 +79,7 @@ fi
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SIM_BIN="${ROOT_DIR}/third_party/unitree_mujoco/simulate/build/unitree_mujoco"
+SIM_CONFIG="${ROOT_DIR}/third_party/unitree_mujoco/simulate/config.yaml"
 if [[ "$use_ros2" -eq 1 ]]; then
   STEPIT_BIN="${ROOT_DIR}/ros2_ws/install/stepit_ros2/lib/stepit_ros2/stepit"
   if [[ -z "${ROS_DISTRO:-}" ]]; then
@@ -106,8 +107,33 @@ cleanup() {
     kill "$sim_pid" 2>/dev/null || true
     wait "$sim_pid" 2>/dev/null || true
   fi
+  if [[ -n "${sim_config_bak:-}" && -f "${sim_config_bak}" ]]; then
+    cp "${sim_config_bak}" "${SIM_CONFIG}"
+    rm -f "${sim_config_bak}"
+  fi
 }
 trap cleanup EXIT INT TERM
+
+if [[ ! -f "$SIM_CONFIG" ]]; then
+  echo "unitree_mujoco config not found at: $SIM_CONFIG" >&2
+  exit 1
+fi
+
+sim_config_bak="$(mktemp)"
+cp "${SIM_CONFIG}" "${sim_config_bak}"
+
+elastic_band=0
+if [[ "$robot" == "g1" ]]; then
+  elastic_band=1
+fi
+
+if grep -q '^[[:space:]]*enable_elastic_band:' "${sim_config_bak}"; then
+  sed -E "s/^([[:space:]]*enable_elastic_band:[[:space:]]*)[0-9]+/\\1${elastic_band}/" \
+    "${sim_config_bak}" > "${SIM_CONFIG}"
+else
+  cp "${sim_config_bak}" "${SIM_CONFIG}"
+  printf '\nenable_elastic_band: %s\n' "${elastic_band}" >> "${SIM_CONFIG}"
+fi
 
 "$SIM_BIN" -r "$robot" -s "$scene" -i 1 -n lo &
 sim_pid=$!
