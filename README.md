@@ -96,6 +96,16 @@ Simulate a learned policy with joystick control:
 ./scripts/run_sim.sh -r go2 -s scene.xml -c joystick -f joystick@usb -p path/to/policy_dir -P dummy
 ```
 
+### Template
+
+Use the following template to launch the `g1` simulation with the bundled example policy:
+
+```bash
+./scripts/run_sim.sh -r g1 -s scene.xml -c joystick -f joystick@usb -p ./template_policy/g1_amp -P dummy
+```
+
+> **Note for `g1`:** The simulation includes a virtual elastic band for lifting and lowering the robot. Use keyboard `7` to lower the robot, `8` to lift it, and `9` to enable or release the suspension.
+
 ---
 
 ## 🌐 ROS 2 Mode (Optional)

@@ -1,0 +1,10 @@
+input_field:
+  observation:
+    - { name: ang_vel,    size: 3  }
+    - { name: gravity,    size: 3  }
+    - { name: cmd_vel,    size: 3  }
+    - { name: joint_pos,  size: 29 }
+    - { name: joint_vel,  size: 29 }
+    - { name: action_p1,  size: 29 }
+output_field:
+  - { name: action, size: 29 }
