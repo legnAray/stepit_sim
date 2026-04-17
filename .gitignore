@@ -36,3 +36,5 @@ Thumbs.db
 
 MUJOCO_LOG.TXT
 dev_policy/
+
+*.csv
