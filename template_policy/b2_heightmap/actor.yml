@@ -1,0 +1,29 @@
+action_dim: 12
+inputs:
+- observation:
+  - 1
+  - 1
+  - 45
+- memory_in.0:
+  - 2
+  - 1
+  - 256
+- memory_in.1:
+  - 2
+  - 1
+  - 256
+is_recurrent: true
+observation_dim: 45
+outputs:
+- action:
+  - 1
+  - 1
+  - 12
+- memory_out.0:
+  - 2
+  - 1
+  - 256
+- memory_out.1:
+  - 2
+  - 1
+  - 256
