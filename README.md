@@ -54,7 +54,14 @@ ln -s ~/.mujoco/mujoco-3.3.6 mujoco
 
 ## 🛠️ Build Instructions
 
-### Build unitree_mujoco
+There are two build profiles:
+
+- **Basic simulation:** MuJoCo + Unitree DDS control, no ROS 2 perception topics.
+- **ROS 2 perception:** MuJoCo publishes raycaster/GridMap topics, and StepIt can use `policy_neuro_ros2::field_subscriber` / `heightmap_subscriber`.
+
+### Basic Simulation Build
+
+Build `unitree_mujoco` without ROS 2 publishers:
 
 ```bash
 cmake -S third_party/unitree_mujoco/simulate \
@@ -63,7 +70,7 @@ cmake -S third_party/unitree_mujoco/simulate \
 cmake --build third_party/unitree_mujoco/simulate/build -j
 ```
 
-### Build StepIt
+Build StepIt without ROS 2 plugins:
 
 ```bash
 export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;publisher_csv;policy_neuro;nnrt_onnxruntime;robot_unitree2"
@@ -72,6 +79,54 @@ cmake -S third_party/stepit -B build/stepit \
   -DSTEPIT_WHITELIST_PLUGINS="$STEPIT_WHITELIST_PLUGINS" \
   -DCMAKE_BUILD_TYPE=Release
 cmake --build build/stepit -j
+```
+
+Run with the normal StepIt binary:
+
+```bash
+./scripts/run_sim.sh -r go2 -s scene.xml -c joystick -f joystick@usb -p path/to/policy_dir -P dummy
+```
+
+### ROS 2 Perception Build
+
+Install the extra ROS 2 packages needed by the simulator perception publishers:
+
+```bash
+sudo apt install -y \
+  ros-<distro>-grid-map-msgs ros-<distro>-grid-map-ros ros-<distro>-grid-map-cv \
+  ros-<distro>-pcl-conversions ros-<distro>-tf2-ros
+```
+
+Build `unitree_mujoco` with ROS 2 raycaster/GridMap publishers:
+
+```bash
+source /opt/ros/<distro>/setup.zsh
+
+cmake -S third_party/unitree_mujoco/simulate \
+      -B third_party/unitree_mujoco/simulate/build \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DENABLE_ROS2=ON
+cmake --build third_party/unitree_mujoco/simulate/build -j
+```
+
+Build StepIt in the bundled ROS 2 workspace with `policy_neuro_ros2` enabled:
+
+```bash
+source /opt/ros/<distro>/setup.zsh
+cd ros2_ws
+
+export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;publisher_csv;policy_neuro;policy_neuro_ros2;nnrt_onnxruntime;robot_unitree2"
+colcon build --base-paths src src/stepit/package/ros2 --packages-skip stepit --cmake-args \
+  -DSTEPIT_WHITELIST_PLUGINS="$STEPIT_WHITELIST_PLUGINS;ros2_base" \
+  -DCMAKE_BUILD_TYPE=Release
+```
+
+Run with the ROS 2 StepIt binary:
+
+```bash
+source /opt/ros/<distro>/setup.zsh
+source ros2_ws/install/setup.zsh
+./scripts/run_sim.sh -ros2 -r go2 -s scene.xml -c ros2_srv -P ros2 -f spin@ros2
 ```
 
 ---
@@ -112,25 +167,17 @@ Use the following template to launch the `g1` simulation with the bundled exampl
 
 Enable StepIt’s ROS 2 interface for modular control.
 
-### 1. Build ROS 2 Packages
+To feed terrain/depth into policies, keep `policy_neuro_ros2` in the whitelist. The simulator can publish `/height_scan_array` and `/depth_camera_array` for `field_subscriber`; `height_scan` defaults to `output_format: "both"`, so `/height_scan` is also available for `/elevation_map` and `heightmap_subscriber` when `enable_gridmap: true`.
+
+### Launch in ROS 2 Mode
 
 ```bash
 source /opt/ros/<distro>/setup.zsh
-cd ros2_ws
-export STEPIT_WHITELIST_PLUGINS="control_console;joystick_usb;joystick_udp;publisher_csv;policy_neuro;nnrt_onnxruntime;robot_unitree2"
-colcon build --base-paths src src/stepit/package/ros2 --packages-skip stepit --cmake-args \
-  -DSTEPIT_WHITELIST_PLUGINS="$STEPIT_WHITELIST_PLUGINS;ros2_base" \
-  -DCMAKE_BUILD_TYPE=Release
-```
-
-### 2. Launch in ROS 2 Mode
-
-```bash
 source ros2_ws/install/setup.zsh
 ./scripts/run_sim.sh -ros2 -r go2 -s scene.xml -c ros2_srv -P ros2 -f spin@ros2
 ```
 
-### 3. Control Commands
+### Control Commands
 
 | Method | Command |
 | --- | --- |
