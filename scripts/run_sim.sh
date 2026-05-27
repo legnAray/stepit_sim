@@ -12,6 +12,10 @@ Required:
 
 Optional:
   -ros2            Use ROS2 stepit binary (requires ROS2 env pre-sourced)
+  --heightmap      Enable MuJoCo height_scan raycaster sensor
+  --height-scan    Alias for --heightmap
+  --depth          Enable MuJoCo depth_camera raycaster sensor
+  --depth-camera   Alias for --depth
 
 Notes:
   - All other arguments are passed to stepit as-is.
@@ -25,6 +29,7 @@ stepit_robot=""
 scene=""
 use_ros2=0
 stepit_args=()
+raycaster_sensors=()
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -53,6 +58,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     -ros2)
       use_ros2=1
+      shift
+      ;;
+    --heightmap|--height-map|--height-scan|--height_scan)
+      raycaster_sensors+=("height_scan")
+      shift
+      ;;
+    --depth|--depth-camera|--depth_camera)
+      raycaster_sensors+=("depth_camera")
       shift
       ;;
     --)
@@ -101,6 +114,15 @@ fi
 
 export STEPIT_NETIF="lo"
 export STEPIT_UNITREE2_DOMAIN_ID="1"
+
+if [[ "${#raycaster_sensors[@]}" -gt 0 ]]; then
+  raycaster_csv="$(IFS=,; echo "${raycaster_sensors[*]}")"
+  if [[ -n "${UNITREE_MUJOCO_RAYCASTER_ENABLE:-}" ]]; then
+    export UNITREE_MUJOCO_RAYCASTER_ENABLE="${UNITREE_MUJOCO_RAYCASTER_ENABLE},${raycaster_csv}"
+  else
+    export UNITREE_MUJOCO_RAYCASTER_ENABLE="${raycaster_csv}"
+  fi
+fi
 
 cleanup() {
   if [[ -n "${sim_pid:-}" ]]; then

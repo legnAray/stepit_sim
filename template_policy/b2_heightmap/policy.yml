@@ -1,0 +1,32 @@
+control_freq: 50
+
+actuator:
+  type: position
+  Kp: 160
+  Kd: 5
+  scale: [0.125, 0.25, 0.25, 0.125, 0.25, 0.25, 0.125, 0.25, 0.25, 0.125, 0.25, 0.25]
+  bias:  [0, 0.8, -1.5, 0, 0.8, -1.5, 0, 0.8, -1.5, 0, 0.8, -1.5]
+
+action_mean: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+publish_fields:
+  - cmd_vel
+  - cmd_height
+  - cmd_pitch
+  - cmd_roll
+  - cmd_vel_pose
+  - action_p1
+  - action
+  - last_target_joint_pos
+  - joint_pos
+  - joint_pos_rel
+
+module:
+  - cmd_vel_source
+  - cmd_height_source
+  - cmd_pitch_source
+  - cmd_roll_source
+  - action_history
+  - field_subscriber
+  - field_ops
+  - actor

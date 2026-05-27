@@ -1,29 +1,11 @@
-action_dim: 12
-inputs:
-- observation:
-  - 1
-  - 1
-  - 45
-- memory_in.0:
-  - 2
-  - 1
-  - 256
-- memory_in.1:
-  - 2
-  - 1
-  - 256
-is_recurrent: true
-observation_dim: 45
-outputs:
-- action:
-  - 1
-  - 1
-  - 12
-- memory_out.0:
-  - 2
-  - 1
-  - 256
-- memory_out.1:
-  - 2
-  - 1
-  - 256
+input_field:
+  observation:
+    - { name: ang_vel,       size: 3   }
+    - { name: gravity,       size: 3   }
+    - { name: cmd_vel_pose,  size: 6   }
+    - { name: joint_pos_rel, size: 12  }
+    - { name: joint_vel_rel, size: 12  }
+    - { name: action_p1,     size: 12  }
+    - { name: heightmap,     size: 221 }
+output_field:
+  - { name: action, size: 12 }

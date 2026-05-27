@@ -168,6 +168,7 @@ Use the following template to launch the `g1` simulation with the bundled exampl
 Enable StepIt’s ROS 2 interface for modular control.
 
 To feed terrain/depth into policies, keep `policy_neuro_ros2` in the whitelist. The simulator can publish `/height_scan_array` and `/depth_camera_array` for `field_subscriber`; `height_scan` defaults to `output_format: "both"`, so `/height_scan` is also available for `/elevation_map` and `heightmap_subscriber` when `enable_gridmap: true`.
+Raycaster sensors are defined in the MuJoCo XML but default to disabled; enable them explicitly with `--heightmap` and/or `--depth`.
 
 ### Launch in ROS 2 Mode
 
@@ -201,6 +202,8 @@ Refer to [stepit](https://github.com/chengruiz/stepit) for additional parameter 
 | `-P` | Publisher type | `dummy`, `csv`, `ros2` |
 | `-f` | default factory for a specified type | `joystick@usb`, `spin@ros2`, `spin@wait_for_sigint` |
 | `-v` | Log level | `0(Error)`, `1(Warn)`, `2(Info)`, `3(Debug)` |
+| `--heightmap` / `--height-scan` | Enable MuJoCo `height_scan` raycaster | (Flag) |
+| `--depth` / `--depth-camera` | Enable MuJoCo `depth_camera` raycaster | (Flag) |
 | `--` | **Pass-through** | Forward CLI args to StepIt plugins (e.g., ROS 2 args) |
 
 #### 💡 Pass-through Examples
