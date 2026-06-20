@@ -43,7 +43,7 @@ while [[ $# -gt 0 ]]; do
       if [[ "$robot" == "g1" ]]; then
         stepit_robot="g1"
       elif [[ "$robot" == "aliengo" ]]; then
-        stepit_robot="aliengo_mujoco"
+        stepit_robot="aliengo_sim"
       fi
       stepit_args+=("$1" "$stepit_robot")
       shift 2

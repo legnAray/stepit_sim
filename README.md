@@ -26,13 +26,26 @@ git submodule update --init --recursive
 ### 2. Install System Dependencies
 
 ```bash
-sudo apt update && sudo apt install -y cmake build-essential \
+sudo apt update && sudo apt install -y \
+  ca-certificates curl git build-essential \
   libboost-dev libboost-filesystem-dev libboost-program-options-dev \
   libeigen3-dev libfmt-dev libyaml-cpp-dev \
   libspdlog-dev libglfw3-dev liblcm-dev
 ```
 
-### 3. Install Unitree SDK2
+### 3. Prepare Workspace-local CMake
+
+StepIt requires CMake 3.23 or newer. Ubuntu 22.04 ships CMake 3.22.1, so this repository uses a workspace-local CMake under `tools/cmake` instead of changing the system CMake.
+
+```bash
+./scripts/setup_cmake.sh
+export PATH="$PWD/tools/cmake/bin:$PATH"
+cmake --version
+```
+
+Run the `export PATH=...` line again in each new terminal before building. Do not run `third_party/stepit/scripts/setup.sh` for this repository; that script is for standalone StepIt workspaces, while `stepit_sim` uses the pinned `third_party/stepit` submodule.
+
+### 4. Install Unitree SDK2
 
 ```bash
 git clone https://github.com/unitreerobotics/unitree_sdk2.git
@@ -41,7 +54,7 @@ cmake .. -DCMAKE_INSTALL_PREFIX=/opt/unitree_robotics
 sudo make install
 ```
 
-### 4. Link MuJoCo
+### 5. Link MuJoCo
 
 Download **MuJoCo 3.3.6** from [MuJoCo Releases](https://github.com/google-deepmind/mujoco/releases).
 
@@ -58,6 +71,12 @@ There are two build profiles:
 
 - **Basic simulation:** MuJoCo + Unitree DDS control, no ROS 2 perception topics.
 - **ROS 2 perception:** MuJoCo publishes raycaster/GridMap topics, and StepIt can use `policy_neuro_ros2::field_subscriber` / `heightmap_subscriber`.
+
+If you opened a new terminal after setup, enable the workspace-local CMake first:
+
+```bash
+export PATH="$PWD/tools/cmake/bin:$PATH"
+```
 
 ### Basic Simulation Build
 
