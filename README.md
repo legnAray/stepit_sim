@@ -85,7 +85,8 @@ Build `unitree_mujoco` without ROS 2 publishers:
 ```bash
 cmake -S third_party/unitree_mujoco/simulate \
       -B third_party/unitree_mujoco/simulate/build \
-      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_BUILD_TYPE=Release \
+      -DENABLE_ROS2=OFF
 cmake --build third_party/unitree_mujoco/simulate/build -j
 ```
 
