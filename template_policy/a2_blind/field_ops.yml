@@ -1,0 +1,5 @@
+operators:
+  - type: affine
+    source: joint_pos
+    target: joint_pos_rel
+    mean: [0, 0.8, -1.5, 0, 0.8, -1.5, 0, 0.8, -1.5, 0, 0.8, -1.5]
