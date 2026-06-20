@@ -7,7 +7,7 @@ Usage:
   scripts/run_sim.sh -r <robot> -s <scene.xml> [stepit args] [-- <plugin args>]
 
 Required:
-  -r, --robot       Robot name (g1 | go2 | b2 | aliengo)
+  -r, --robot       Robot name (g1 | go2 | b2 | aliengo | a2)
   -s, --scene       Scene file (e.g., scene.xml)
 
 Optional:

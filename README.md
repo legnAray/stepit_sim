@@ -8,6 +8,7 @@
 * **Unitree Go2**
 * **Unitree B2**
 * **Unitree Aliengo**
+* **Unitree A2**
 
 > *Note: Support for additional robotic platforms will be integrated in future updates.*
 
@@ -215,7 +216,7 @@ Refer to [stepit](https://github.com/chengruiz/stepit) for additional parameter 
 | Argument | Description | Values |
 | --- | --- | --- |
 | `-ros2` | Enable ROS 2 interface | (Flag) |
-| `-r` | Robot model | `aliengo`, `go2`, `b2`, `g1` |
+| `-r` | Robot model | `aliengo`, `go2`, `b2`, `g1`, `a2` |
 | `-s` | Scene XML file | `scene.xml` |
 | `-c` | Controller type | `console`, `joystick`, `ros2_msg`, `ros2_srv`, `dummy` |
 | `-p` | Policy directory path | `/path/to/policy_dir` |
